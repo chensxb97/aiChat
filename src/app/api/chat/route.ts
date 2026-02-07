@@ -8,7 +8,7 @@ export const maxDuration = 5;
 export async function POST(req: Request) {
     const { messages }: { messages: UIMessage[] } = await req.json();
     const result = streamText({
-        model: mistral('magistral-small-2506'),
+        model: mistral('mistral-small-latest'),
         apiKey: process.env.MISTRAL_API_KEY,
         prompt: convertToModelMessages(messages),
         tools: {
