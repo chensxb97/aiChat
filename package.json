@@ -8,8 +8,10 @@
     "start": "next start"
   },
   "dependencies": {
+    "@ai-sdk/mcp": "^1.0.19",
     "@ai-sdk/mistral": "^2.0.16",
     "@ai-sdk/react": "^2.0.51",
+    "@modelcontextprotocol/sdk": "^1.26.0",
     "ai": "^5.0.51",
     "dotenv": "^17.2.2",
     "next": "15.5.4",
