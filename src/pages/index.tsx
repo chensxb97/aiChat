@@ -9,17 +9,27 @@ export default function Chat() {
       {messages.map(message => (
         <div key={message.id} className="whitespace-pre-wrap">
           {message.role === 'user' ? 'User: ' : 'AI: '}
-          {message.parts.map((part, i) => {
-            switch (part.type) {
-              case 'text':
-                return <div key={`${message.id}-${i}`}>{part.text}</div>;
-              case 'tool-weather':
-                return (
-                  <pre key={`${message.id}-${i}`}>
-                    {JSON.stringify(part, null, 2)}
-                  </pre>
-                );
+          {message.parts.map((part, index) => {
+            if (part.type === 'text') {
+              return <span key={index}>{part.text}</span>;
             }
+            if (part.type === 'tool-weather') {
+              switch (part.state) {
+                case 'input-available':
+                  return <div key={index}>Loading weather...</div>;
+                case 'output-available':
+                  return (
+                    <pre key={`${message.id}-${index}`}>
+                      {JSON.stringify(part, null, 2)}
+                    </pre>
+                  );
+                case 'output-error':
+                  return <div key={index}>Error: {part.errorText}</div>;
+                default:
+                  return null;
+              }
+            }
+            return null;
           })}
         </div>
       ))}
