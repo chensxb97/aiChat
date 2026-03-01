@@ -3,7 +3,7 @@ from fastmcp import FastMCP
 from fastmcp.exceptions import ToolError
 
 # Initialize FastMCP in stateless mode
-mcp = FastMCP("Calculator", stateless_http=True)
+mcp = FastMCP("Calculator")
 
 # Define the delay in seconds
 DELAY_SECONDS = 2
@@ -36,4 +36,4 @@ async def divide(a: int, b: int) -> dict:
 
 if __name__ == "__main__":
     # Runs on http://localhost:5000/mcp
-    mcp.run(transport="http", port=5000)
+    mcp.run(transport="http", port=5000, stateless_http=True)
