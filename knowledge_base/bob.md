@@ -8,8 +8,8 @@ Bob is of 50 years old as of 1st March 2026.
 Bob is working as an engineer since he was 18. He is currently working at AHS. 
 
 ## Goals
-Bob wants to earn $1,000,000 when she turns 90.
-He currently earns $6,000 a month.
+Bob is currently earning $6,000 a month.
+Bob wants to have $1,000,000 in savings when he turns 90.
 
 ## Experience
 - AHS (20 years, 1996 - present)

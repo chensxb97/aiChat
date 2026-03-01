@@ -9,11 +9,6 @@ import { z } from "zod";
 import fs from 'fs/promises';
 import path from 'path';
 
-const httpTransport = new StreamableHTTPClientTransport(
-    new URL("http://127.0.0.1:5000/mcp"),
-    {}
-);
-
 
 const weather = tool({
     description: 'Get the weather in a location',
@@ -60,8 +55,41 @@ for (const file of files) {
     });
 }
 
+function getDbSizeInBytes(data: { embedding: number[]; value: string }[]): number {
+    let totalBytes = 0;
+
+    for (const item of data) {
+        // 1. Calculate string size (approx 2 bytes per character)
+        totalBytes += item.value.length * 2;
+
+        // 2. Calculate embedding size (Float64Array elements are 8 bytes each)
+        // mistral-embed usually produces 1024 dimensions
+        totalBytes += item.embedding.length * 8;
+
+        // 3. Object overhead (approximate metadata for each object in the array)
+        totalBytes += 40;
+    }
+
+    return totalBytes;
+}
+
+// Usage:
+const sizeBytes = getDbSizeInBytes(db);
+const sizeMB = (sizeBytes / (1024 * 1024)).toFixed(2);
+
+console.log(`Memory Usage: ${sizeBytes.toLocaleString()} bytes (~${sizeMB} MB)`);
+
 export async function POST(req: Request) {
     try {
+        const httpTransport = new StreamableHTTPClientTransport(
+            new URL("http://127.0.0.1:5000/mcp"),
+            {}
+        );
+
+        const mcpClient = await experimental_createMCPClient({
+            transport: httpTransport,
+        });
+
         const { messages }: { messages: UIMessage[] } = await req.json();
         const lastMessage = messages[messages.length - 1]
         const queryText = lastMessage.parts[0].text
@@ -74,10 +102,6 @@ export async function POST(req: Request) {
 
         console.log("Embeddings: ", embedding)
 
-        const mcpClient = await experimental_createMCPClient({
-            transport: httpTransport,
-        });
-
         const mcpTools = await mcpClient.tools()
 
         const context = db.map(item => ({
@@ -89,7 +113,7 @@ export async function POST(req: Request) {
             .map(r => r.document.value)
             .join('\n');
 
-        console.log("CONTEXT: ", context)
+        // console.log("CONTEXT: ", context)
 
         const result = streamText({
             model: mistral('mistral-small-latest'),
